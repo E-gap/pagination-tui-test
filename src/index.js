@@ -211,11 +211,15 @@ for (const block of blocks) {
 } */
 
 
-const axios = require('axios').default;
+
+//-------------- 2 стадия-------------------------
+
+/* const axios = require('axios').default;
 import axios from "axios";
 import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
+import InfiniteScroll from "infinite-scroll";
 
 const key = "31147704-3d6790a6d451c63a87a2b7851"
 
@@ -240,12 +244,16 @@ refs.buttonMore.style.marginTop = "20px";
 refs.buttonMore.setAttribute("disabled", true);
 
 let page = 0;
-const perPage = 4;
+const perPage = 20;
 
 refs.form.addEventListener('submit', search);
 
 function search (e) {
   e.preventDefault();
+  
+
+
+
   refs.gallery.innerHTML = ""
     const request = refs.form.elements.searchQuery.value
     page = 1;
@@ -289,7 +297,11 @@ function search (e) {
               
               
               refs.gallery.innerHTML = fotos; 
+
+
               const lightbox = new SimpleLightbox('.gallery a');
+
+              
 
               const info = document.querySelectorAll('.info');
 
@@ -317,7 +329,6 @@ function search (e) {
 
               }
 
-              
 
               refs.gallery.style.display = "flex";
               refs.gallery.style.flexWrap = "wrap"; 
@@ -443,6 +454,476 @@ for (const block of blocks) {
 
     })        
 }
+ */
+
+
+
+//--------------------3 стадия без кнопки Load More------------------
+
+/* const axios = require('axios').default;
+import axios from "axios";
+import Notiflix from 'notiflix';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
+
+
+const key = "31147704-3d6790a6d451c63a87a2b7851"
+
+const refs = {
+    form: document.querySelector('.search-form'),
+    gallery: document.querySelector('.gallery'),      
+}
+
+refs.form.style.display = "flex";
+refs.form.style.justifyContent = "center";
+refs.form.style.marginBottom = "20px";
+
+let page = 0;
+const perPage = 8;
+
+refs.form.addEventListener('submit', search);
+
+function search (e) {
+  e.preventDefault();
+
+  refs.gallery.innerHTML = ""
+    const request = refs.form.elements.searchQuery.value
+    page = 1;
+    
+    
+    fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+        .then(response => response.json())
+      .then(({totalHits, hits}) => {
+        if (totalHits) {Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)}
+        
+        return hits
+      })
+        .then(array => {
+            if (array.length === 0) {
+                Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
+            }
+            else {
+                
+                const fotos = array.map(({largeImageURL, webformatURL, tags, likes, views, comments, downloads}) => `
+        <a href="${largeImageURL}">        
+        <div class="photo-card">  
+        <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
+  <div class="info">
+    <p class="info-item">
+      <b>Likes: <span class="block">${likes}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Views: <span class="block">${views}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Comments: <span class="block">${comments}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Downloads: <span class="block">${downloads}</span></b>
+    </p>
+  </div>
+</div>
+</a>
+
+`).join('')
+              
+              
+              refs.gallery.innerHTML = fotos; 
+
+
+              const lightbox = new SimpleLightbox('.gallery a');
+
+              const info = document.querySelectorAll('.info');
+
+              for (const inf of info) {
+                inf.style.textDecoration = "none";
+                inf.style.color = "black";
+                inf.style.display = "flex";
+                inf.style.justifyContent = "space-between";
+              }
+
+             const links = document.querySelectorAll('a');
+
+              for (const link of links) {
+                link.style.textDecoration = "none";
+              }
+
+              const photoCards = document.querySelectorAll('.photo-card');
+
+              for (const photoCard of photoCards) {
+
+                photoCard.style.width = "330px";
+                photoCard.style.border = "solid"
+                photoCard.style.borderColor = "green"
+                photoCard.style.marginBottom = "10px"
+
+              }
+
+
+              refs.gallery.style.display = "flex";
+              refs.gallery.style.flexWrap = "wrap"; 
+              refs.gallery.style.justifyContent = "space-between"; 
+              
+              const images = document.querySelectorAll('img');
+              
+              
+for (const image of images) {
+
+  image.style.width = "100%"; 
+  image.style.height = "210px"; 
+}
+              
+  const blocks = document.querySelectorAll('.block');
+
+for (const block of blocks) {
+
+  block.style.display = "flex"; 
+  block.style.justifyContent = "center"
+}
+              
+            }
+        })    
+     
+}
+
+window.addEventListener('scroll', () => { 
+  if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+    loadMore()
+  }
+});
+
+function loadMore (e) {
+    
+    const request = refs.form.elements.searchQuery.value
+    page += 1;
+    
+    
+  fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+    .then(response => response.json())
+    .then(({totalHits, hits}) => {
+      
+      if (page * perPage >= totalHits) {
+        Notiflix.Notify.warning(`We're sorry, but you've reached the end of search results.`);
+        refs.buttonMore.setAttribute("disabled", true);
+      }
+            
+      return hits
+    })
+    .then(array => {
+                            
+      const fotos = array.map(({largeImageURL, webformatURL, tags, likes, views, comments, downloads}) => `
+      <a href="${largeImageURL}">
+        
+        <div class="photo-card">
+        <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
+    <div class="info">
+    <p class="info-item">
+      <b>Likes: <span class="block">${likes}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Views: <span class="block">${views}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Comments: <span class="block">${comments}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Downloads: <span class="block">${downloads}</span></b>
+    </p>
+  </div>
+</div>
+</a>
+`).join('')
+      refs.gallery.innerHTML += fotos;
+      const lightbox = new SimpleLightbox('.gallery a');
+      lightbox.refresh();
+       const info = document.querySelectorAll('.info');
+
+              for (const inf of info) {
+                inf.style.color = "black";
+                inf.style.display = "flex";
+                inf.style.justifyContent = "space-between";
+              }
+
+      const links = document.querySelectorAll('a');
+
+              for (const link of links) {
+                link.style.textDecoration = "none";
+              }
+      
+              const photoCards = document.querySelectorAll('.photo-card');
+
+              for (const photoCard of photoCards) {
+
+                photoCard.style.width = "330px";
+                photoCard.style.border = "solid"
+                photoCard.style.borderColor = "green"
+                photoCard.style.marginBottom = "10px"
+
+              }
+
+              
+
+              refs.gallery.style.display = "flex";
+              refs.gallery.style.flexWrap = "wrap"; 
+              refs.gallery.style.justifyContent = "space-between"; 
+              
+              const images = document.querySelectorAll('img');
+              
+              
+for (const image of images) {
+
+  image.style.width = "100%"; 
+  image.style.height = "210px"; 
+}
+              
+  const blocks = document.querySelectorAll('.block');
+
+for (const block of blocks) {
+
+  block.style.display = "flex"; 
+  block.style.justifyContent = "center"
+}
+
+    })        
+}
+ */
+
+
+//------------async-await---------------------------
+
+const axios = require('axios').default;
+import axios from "axios";
+import Notiflix from 'notiflix';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
+
+
+const key = "31147704-3d6790a6d451c63a87a2b7851"
+
+const refs = {
+    form: document.querySelector('.search-form'),
+    gallery: document.querySelector('.gallery'),      
+}
+
+refs.form.style.display = "flex";
+refs.form.style.justifyContent = "center";
+refs.form.style.marginBottom = "20px";
+
+let page = 0;
+const perPage = 8;
+
+refs.form.addEventListener('submit', search);
+
+function search (e) {
+  e.preventDefault();
+
+  refs.gallery.innerHTML = ""
+    const request = refs.form.elements.searchQuery.value
+    page = 1;
+    
+    
+    fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+        .then(response => response.json())
+      .then(({totalHits, hits}) => {
+        if (totalHits) {Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)}
+        
+        return hits
+      })
+        .then(array => {
+            if (array.length === 0) {
+                Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
+            }
+            else {
+                
+                const fotos = array.map(({largeImageURL, webformatURL, tags, likes, views, comments, downloads}) => `
+        <a href="${largeImageURL}">        
+        <div class="photo-card">  
+        <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
+  <div class="info">
+    <p class="info-item">
+      <b>Likes: <span class="block">${likes}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Views: <span class="block">${views}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Comments: <span class="block">${comments}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Downloads: <span class="block">${downloads}</span></b>
+    </p>
+  </div>
+</div>
+</a>
+
+`).join('')
+              
+              
+              refs.gallery.innerHTML = fotos; 
+
+
+              const lightbox = new SimpleLightbox('.gallery a');
+
+              const info = document.querySelectorAll('.info');
+
+              for (const inf of info) {
+                inf.style.textDecoration = "none";
+                inf.style.color = "black";
+                inf.style.display = "flex";
+                inf.style.justifyContent = "space-between";
+              }
+
+             const links = document.querySelectorAll('a');
+
+              for (const link of links) {
+                link.style.textDecoration = "none";
+              }
+
+              const photoCards = document.querySelectorAll('.photo-card');
+
+              for (const photoCard of photoCards) {
+
+                photoCard.style.width = "330px";
+                photoCard.style.border = "solid"
+                photoCard.style.borderColor = "green"
+                photoCard.style.marginBottom = "10px"
+
+              }
+
+
+              refs.gallery.style.display = "flex";
+              refs.gallery.style.flexWrap = "wrap"; 
+              refs.gallery.style.justifyContent = "space-between"; 
+              
+              const images = document.querySelectorAll('img');
+              
+              
+for (const image of images) {
+
+  image.style.width = "100%"; 
+  image.style.height = "210px"; 
+}
+              
+  const blocks = document.querySelectorAll('.block');
+
+for (const block of blocks) {
+
+  block.style.display = "flex"; 
+  block.style.justifyContent = "center"
+}
+              
+            }
+        })    
+     
+}
+
+window.addEventListener('scroll', () => { 
+  if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+    loadMore()
+  }
+});
+
+function loadMore (e) {
+    
+    const request = refs.form.elements.searchQuery.value
+    page += 1;
+    
+    
+  fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+    .then(response => response.json())
+    .then(({totalHits, hits}) => {
+      
+      if (page * perPage >= totalHits) {
+        Notiflix.Notify.warning(`We're sorry, but you've reached the end of search results.`);
+        refs.buttonMore.setAttribute("disabled", true);
+      }
+            
+      return hits
+    })
+    .then(array => {
+                            
+      const fotos = array.map(({largeImageURL, webformatURL, tags, likes, views, comments, downloads}) => `
+      <a href="${largeImageURL}">
+        
+        <div class="photo-card">
+        <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
+    <div class="info">
+    <p class="info-item">
+      <b>Likes: <span class="block">${likes}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Views: <span class="block">${views}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Comments: <span class="block">${comments}</span></b>
+    </p>
+    <p class="info-item">
+      <b>Downloads: <span class="block">${downloads}</span></b>
+    </p>
+  </div>
+</div>
+</a>
+`).join('')
+      refs.gallery.innerHTML += fotos;
+      const lightbox = new SimpleLightbox('.gallery a');
+      lightbox.refresh();
+       const info = document.querySelectorAll('.info');
+
+              for (const inf of info) {
+                inf.style.color = "black";
+                inf.style.display = "flex";
+                inf.style.justifyContent = "space-between";
+              }
+
+      const links = document.querySelectorAll('a');
+
+              for (const link of links) {
+                link.style.textDecoration = "none";
+              }
+      
+              const photoCards = document.querySelectorAll('.photo-card');
+
+              for (const photoCard of photoCards) {
+
+                photoCard.style.width = "330px";
+                photoCard.style.border = "solid"
+                photoCard.style.borderColor = "green"
+                photoCard.style.marginBottom = "10px"
+
+              }
+
+              
+
+              refs.gallery.style.display = "flex";
+              refs.gallery.style.flexWrap = "wrap"; 
+              refs.gallery.style.justifyContent = "space-between"; 
+              
+              const images = document.querySelectorAll('img');
+              
+              
+for (const image of images) {
+
+  image.style.width = "100%"; 
+  image.style.height = "210px"; 
+}
+              
+  const blocks = document.querySelectorAll('.block');
+
+for (const block of blocks) {
+
+  block.style.display = "flex"; 
+  block.style.justifyContent = "center"
+}
+
+    })        
+}
+
+
+
+ 
+
+
+
  
 
 
