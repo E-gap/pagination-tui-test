@@ -696,11 +696,11 @@ import axios from "axios";
 import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
-
+import { render } from "../src/render";
 
 const key = "31147704-3d6790a6d451c63a87a2b7851"
 
-const refs = {
+export const refs = {
     form: document.querySelector('.search-form'),
     gallery: document.querySelector('.gallery'),      
 }
@@ -723,7 +723,7 @@ function search (e) {
     
     
     fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
-        .then(response => response.json())
+      .then(response => response.json())   
       .then(({totalHits, hits}) => {
         if (totalHits) {Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)}
         
@@ -734,87 +734,9 @@ function search (e) {
                 Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
             }
             else {
-                
-                const fotos = array.map(({largeImageURL, webformatURL, tags, likes, views, comments, downloads}) => `
-        <a href="${largeImageURL}">        
-        <div class="photo-card">  
-        <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
-  <div class="info">
-    <p class="info-item">
-      <b>Likes: <span class="block">${likes}</span></b>
-    </p>
-    <p class="info-item">
-      <b>Views: <span class="block">${views}</span></b>
-    </p>
-    <p class="info-item">
-      <b>Comments: <span class="block">${comments}</span></b>
-    </p>
-    <p class="info-item">
-      <b>Downloads: <span class="block">${downloads}</span></b>
-    </p>
-  </div>
-</div>
-</a>
-
-`).join('')
-              
-              
-              refs.gallery.innerHTML = fotos; 
-
-
-              const lightbox = new SimpleLightbox('.gallery a');
-
-              const info = document.querySelectorAll('.info');
-
-              for (const inf of info) {
-                inf.style.textDecoration = "none";
-                inf.style.color = "black";
-                inf.style.display = "flex";
-                inf.style.justifyContent = "space-between";
-              }
-
-             const links = document.querySelectorAll('a');
-
-              for (const link of links) {
-                link.style.textDecoration = "none";
-              }
-
-              const photoCards = document.querySelectorAll('.photo-card');
-
-              for (const photoCard of photoCards) {
-
-                photoCard.style.width = "330px";
-                photoCard.style.border = "solid"
-                photoCard.style.borderColor = "green"
-                photoCard.style.marginBottom = "10px"
-
-              }
-
-
-              refs.gallery.style.display = "flex";
-              refs.gallery.style.flexWrap = "wrap"; 
-              refs.gallery.style.justifyContent = "space-between"; 
-              
-              const images = document.querySelectorAll('img');
-              
-              
-for (const image of images) {
-
-  image.style.width = "100%"; 
-  image.style.height = "210px"; 
-}
-              
-  const blocks = document.querySelectorAll('.block');
-
-for (const block of blocks) {
-
-  block.style.display = "flex"; 
-  block.style.justifyContent = "center"
-}
-              
+              render(array)
             }
         })    
-     
 }
 
 window.addEventListener('scroll', () => { 
@@ -840,82 +762,8 @@ function loadMore (e) {
             
       return hits
     })
-    .then(array => {
-                            
-      const fotos = array.map(({largeImageURL, webformatURL, tags, likes, views, comments, downloads}) => `
-      <a href="${largeImageURL}">
-        
-        <div class="photo-card">
-        <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
-    <div class="info">
-    <p class="info-item">
-      <b>Likes: <span class="block">${likes}</span></b>
-    </p>
-    <p class="info-item">
-      <b>Views: <span class="block">${views}</span></b>
-    </p>
-    <p class="info-item">
-      <b>Comments: <span class="block">${comments}</span></b>
-    </p>
-    <p class="info-item">
-      <b>Downloads: <span class="block">${downloads}</span></b>
-    </p>
-  </div>
-</div>
-</a>
-`).join('')
-      refs.gallery.innerHTML += fotos;
-      const lightbox = new SimpleLightbox('.gallery a');
-      lightbox.refresh();
-       const info = document.querySelectorAll('.info');
-
-              for (const inf of info) {
-                inf.style.color = "black";
-                inf.style.display = "flex";
-                inf.style.justifyContent = "space-between";
-              }
-
-      const links = document.querySelectorAll('a');
-
-              for (const link of links) {
-                link.style.textDecoration = "none";
-              }
-      
-              const photoCards = document.querySelectorAll('.photo-card');
-
-              for (const photoCard of photoCards) {
-
-                photoCard.style.width = "330px";
-                photoCard.style.border = "solid"
-                photoCard.style.borderColor = "green"
-                photoCard.style.marginBottom = "10px"
-
-              }
-
-              
-
-              refs.gallery.style.display = "flex";
-              refs.gallery.style.flexWrap = "wrap"; 
-              refs.gallery.style.justifyContent = "space-between"; 
-              
-              const images = document.querySelectorAll('img');
-              
-              
-for (const image of images) {
-
-  image.style.width = "100%"; 
-  image.style.height = "210px"; 
-}
-              
-  const blocks = document.querySelectorAll('.block');
-
-for (const block of blocks) {
-
-  block.style.display = "flex"; 
-  block.style.justifyContent = "center"
-}
-
-    })        
+    .then(render)                           
+           
 }
 
 
