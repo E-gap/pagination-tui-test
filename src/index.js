@@ -689,9 +689,9 @@ for (const block of blocks) {
  */
 
 
-//------------async-await---------------------------
+//------------modules-function---------------------------
 
-const axios = require('axios').default;
+/* const axios = require('axios').default;
 import axios from "axios";
 import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
@@ -721,7 +721,6 @@ function search (e) {
     const request = refs.form.elements.searchQuery.value
     page = 1;
     
-    
     fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
       .then(response => response.json())   
       .then(({totalHits, hits}) => {
@@ -750,7 +749,6 @@ function loadMore (e) {
     const request = refs.form.elements.searchQuery.value
     page += 1;
     
-    
   fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
     .then(response => response.json())
     .then(({totalHits, hits}) => {
@@ -759,13 +757,174 @@ function loadMore (e) {
         Notiflix.Notify.warning(`We're sorry, but you've reached the end of search results.`);
         refs.buttonMore.setAttribute("disabled", true);
       }
-            
       return hits
     })
-    .then(render)                           
-           
+    .then(render)                          
+} */
+
+//----------------async-await-------------------------------------------------
+
+/* const axios = require('axios').default;
+import axios from "axios";
+import Notiflix from 'notiflix';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
+import { render } from "../src/render";
+
+const key = "31147704-3d6790a6d451c63a87a2b7851"
+
+export const refs = {
+    form: document.querySelector('.search-form'),
+    gallery: document.querySelector('.gallery'),      
 }
 
+refs.form.style.display = "flex";
+refs.form.style.justifyContent = "center";
+refs.form.style.marginBottom = "20px";
+
+let page = 0;
+const perPage = 8;
+
+refs.form.addEventListener('submit', search);
+
+async function search (e) {
+  e.preventDefault();
+
+  refs.gallery.innerHTML = ""
+    const request = refs.form.elements.searchQuery.value
+    page = 1;
+  try {
+    const response = await fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+    const resJson = await response.json()
+    const hits = await getHits(resJson)
+    const fotos = await getFotos(hits)
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function getHits(data) {
+  const { totalHits, hits } = data;
+  if (totalHits && page===1) {
+    Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)
+  }
+  if (page * perPage >= totalHits) {
+        Notiflix.Notify.warning(`We're sorry, but you've reached the end of search results.`);
+        
+      }
+  return hits
+}
+
+async function getFotos(data) {
+  if (data.length === 0) {
+    Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
+  }
+  else {
+    render(data)
+  }
+}
+
+window.addEventListener('scroll', () => { 
+  if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+    loadMore()
+  }
+});
+
+async function loadMore (e) {
+    
+    const request = refs.form.elements.searchQuery.value
+    page += 1;
+  try {
+    const response = await fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+    const resJson = await response.json()
+    const hits = await getHits(resJson)
+    const fotos = await getFotos(hits)
+  } catch (error) {
+    console.log(error);
+  }    
+} */
+
+//--------------------Axios------------------------------
+
+const axios = require('axios').default;
+import axios from "axios";
+import Notiflix from 'notiflix';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
+import { render } from "../src/render";
+
+const key = "31147704-3d6790a6d451c63a87a2b7851"
+
+export const refs = {
+    form: document.querySelector('.search-form'),
+    gallery: document.querySelector('.gallery'),      
+}
+
+refs.form.style.display = "flex";
+refs.form.style.justifyContent = "center";
+refs.form.style.marginBottom = "20px";
+
+let page = 0;
+const perPage = 8;
+
+refs.form.addEventListener('submit', search);
+
+async function search (e) {
+  e.preventDefault();
+
+  refs.gallery.innerHTML = ""
+    const request = refs.form.elements.searchQuery.value
+    page = 1;
+  try {
+    const response = await fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+    const resJson = await response.json()
+    const hits = await getHits(resJson)
+    const fotos = await getFotos(hits)
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function getHits(data) {
+  const { totalHits, hits } = data;
+  if (totalHits && page===1) {
+    Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)
+  }
+  if (page * perPage >= totalHits) {
+        Notiflix.Notify.warning(`We're sorry, but you've reached the end of search results.`);
+        
+      }
+  return hits
+}
+
+async function getFotos(data) {
+  if (data.length === 0) {
+    Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
+  }
+  else {
+    render(data)
+  }
+}
+
+window.addEventListener('scroll', () => { 
+  if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+    loadMore()
+  }
+});
+
+async function loadMore (e) {
+    
+    const request = refs.form.elements.searchQuery.value
+    page += 1;
+  try {
+    const response = await fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+    const resJson = await response.json()
+    const hits = await getHits(resJson)
+    const fotos = await getFotos(hits)
+  } catch (error) {
+    console.log(error);
+  }    
+}
 
 
  
