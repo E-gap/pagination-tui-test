@@ -844,7 +844,7 @@ async function loadMore (e) {
   }    
 } */
 
-//--------------------Axios------------------------------
+//--------------------axios------------------------------
 
 const axios = require('axios').default;
 import axios from "axios";
@@ -865,7 +865,7 @@ refs.form.style.justifyContent = "center";
 refs.form.style.marginBottom = "20px";
 
 let page = 0;
-const perPage = 8;
+const perPage = 40;
 
 refs.form.addEventListener('submit', search);
 
@@ -876,10 +876,9 @@ async function search (e) {
     const request = refs.form.elements.searchQuery.value
     page = 1;
   try {
-    const response = await fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
-    const resJson = await response.json()
-    const hits = await getHits(resJson)
-    const fotos = await getFotos(hits)
+    const response = await axios.get(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+    const hits = await getHits(response.data);
+    const fotos = await getFotos(hits);
   } catch (error) {
     console.log(error);
   }
@@ -917,9 +916,8 @@ async function loadMore (e) {
     const request = refs.form.elements.searchQuery.value
     page += 1;
   try {
-    const response = await fetch(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
-    const resJson = await response.json()
-    const hits = await getHits(resJson)
+    const response = await axios.get(`https://pixabay.com/api/?key=${key}&q=${request}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`)
+    const hits = await getHits(response.data);
     const fotos = await getFotos(hits)
   } catch (error) {
     console.log(error);
