@@ -889,7 +889,7 @@ async function getHits(data) {
   if (totalHits && page===1) {
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)
   }
-  if (page * perPage >= totalHits) {
+  if ((page>1 && page * perPage >= totalHits) || (totalHits && totalHits<=perPage)) {
         Notiflix.Notify.warning(`We're sorry, but you've reached the end of search results.`);
         
       }
