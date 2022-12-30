@@ -214,6 +214,8 @@ function loadMorePopular(event) {
 
 refs.form.addEventListener('submit', searchQuery);
 
+//console.log('sdsdsd');
+
 function searchQuery(e) {
   e.preventDefault();
   refs.gallery.innerHTML = '';
